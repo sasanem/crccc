@@ -1,0 +1,185 @@
+<Window x:Class="RegexSearch.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RegexSearch.WPF"
+        mc:Ignorable="d"
+        Title="Обработка строки, описывающей ИНН организации"
+        Height="450" Width="800">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="Margin" Value="0,0,8,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок приложения -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,14">
+            <TextBlock Text="Поиск подстрок в тексте"
+                       FontSize="26"
+                       FontWeight="Bold"
+                       Foreground="Black"/>
+            <TextBlock Text="Сравнение регулярного выражения и конечного автомата"
+                       FontSize="13"
+                       Foreground="#65748B"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Панель с шаблоном распознавания -->
+        <Border Grid.Row="1"
+                Background="White"
+                CornerRadius="7"
+                Padding="12"
+                Margin="0,0,0,12"
+                BorderBrush="#DCE2EA"
+                BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Шаблон распознавания"
+                           FontWeight="SemiBold"
+                           Foreground="#34445A"
+                           Margin="0,0,0,6"/>
+                <TextBlock Text="\b\d{10}\b"
+                           FontFamily="Consolas"
+                           FontSize="15"
+                           Foreground="#1765A5"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Рабочая область: кнопки и две панели -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Кнопки управления поиском -->
+            <WrapPanel Grid.Row="0" Margin="0,0,0,12">
+                <Button Content="Поиск через Regex"
+                        Background="#2878C8"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Click="RegexButton_Click"/>
+                <Button Content="Поиск через автомат"
+                        Background="#21875A"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Click="AutomatonButton_Click"/>
+                <Button Content="Сравнить алгоритмы"
+                        Background="#6B62B5"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Click="CompareButton_Click"/>
+                <Button Content="Очистить"
+                        Background="#E5E9EF"
+                        Foreground="#34445A"
+                        BorderThickness="0"
+                        Click="ClearButton_Click"/>
+            </WrapPanel>
+
+            <!-- Исходный текст и таблица результатов -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.15*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <GroupBox Grid.Column="0"
+                          Header="Исходный текст"
+                          Background="White">
+                    <TextBox x:Name="InputText"
+                             AcceptsReturn="True"
+                             AcceptsTab="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto"
+                             FontFamily="Consolas"
+                             FontSize="14"
+                             Padding="8"
+                             BorderBrush="#DCE2EA"
+                             BorderThickness="1"
+                             VerticalContentAlignment="Top"
+                             Text="ИНН организации: 7707083893&#10;Документ № 7812345678 выдан 01.02.2024&#10;Плательщики 3625003497 и 6315002785 внесены в реестр&#10;Реквизиты (6673003195); счёт 40702810.&#10;&#10;Некорректные: ИНН 77070838, ИНН 77070838931, ИНН 77070А8893, ИНН-7707-0838-93, Ид.7707083893x"/>
+                </GroupBox>
+
+                <GroupBox Grid.Column="2"
+                          Header="Результаты поиска"
+                          Background="White">
+                    <DataGrid x:Name="ResultsGrid"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              RowHeaderWidth="0"
+                              FontSize="13"
+                              Background="White"
+                              BorderThickness="0"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№"
+                                                Binding="{Binding Number}"
+                                                Width="40"/>
+                            <DataGridTextColumn Header="Совпадение"
+                                                Binding="{Binding Value}"
+                                                Width="*"/>
+                            <DataGridTextColumn Header="Позиция"
+                                                Binding="{Binding Position}"
+                                                Width="65"/>
+                            <DataGridTextColumn Header="Длина"
+                                                Binding="{Binding Length}"
+                                                Width="55"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </Grid>
+        </Grid>
+
+        <!-- Строка состояния -->
+        <Border Grid.Row="3"
+                Background="White"
+                BorderBrush="#DCE2EA"
+                BorderThickness="1"
+                CornerRadius="6"
+                Padding="10"
+                Margin="0,12,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="SummaryText"
+                           Text="Результаты поиска появятся здесь."
+                           Foreground="#34445A"
+                           VerticalAlignment="Center"
+                           FontSize="12"/>
+                <TextBlock x:Name="StatusText"
+                           Grid.Column="1"
+                           Text="Программа готова к работе."
+                           Foreground="#21875A"
+                           VerticalAlignment="Center"
+                           FontSize="12"
+                           Margin="12,0,0,0"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
